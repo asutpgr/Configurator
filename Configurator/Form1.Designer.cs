@@ -36,7 +36,6 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.txtnmlst = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -93,7 +92,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(627, 446);
+            this.dataGridView1.Size = new System.Drawing.Size(1887, 917);
             this.dataGridView1.TabIndex = 3;
             // 
             // txtnmlst
@@ -114,23 +113,13 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(396, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 17);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "label2";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(666, 583);
+            this.ClientSize = new System.Drawing.Size(1902, 1033);
             this.Controls.Add(this.txtnmlst);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbProv);
             this.Controls.Add(this.button3);
@@ -157,7 +146,6 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.TextBox txtnmlst;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Label label2;
     }
 }
 

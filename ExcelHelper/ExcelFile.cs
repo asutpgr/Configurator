@@ -4,90 +4,98 @@ using System.Collections.Generic;
 
 namespace ExcelHelper
 {
+    using Exceptions;
     public sealed class ExcelFile
     {
         private string _fullpath;
         private string _filename;
         private string _extension;
         private string _constr;
-        public List<string> _sheetnames;
-        private List<string> _collists;
+        private string _sheetnames;
+        private string _collists;
         public enum Status { None, Initialized, Ready, Reading}
         public ExcelFile(string fullpath)
         {
-            if (string.IsNullOrEmpty(fullpath)) throw new ArgumentNullException(nameof(fullpath));
-            FileInfo file = new FileInfo(fullpath);
-            if (!file.Exists) throw new Exception("Файл не существует.");
+            ExcelFileException.ThrowIfFileNotExsist(fullpath, out FileInfo file);
             _extension = file.Extension ;
             _fullpath = file.FullName;
-            _filename = file.Name;
+            _filename = default(string);
             _constr = default(string);
-            _sheetnames = new List<string>();
-            _collists = new List<string>();
+            _sheetnames = default(string);
+            _collists = default(string); 
         }
         public string Extension 
         {
-            get { return _extension ?? throw new ArgumentNullException(nameof(_extension)); }
-            private set
+            get { ExcelFileException.ThrowIfStringNull(nameof(_extension)); return _extension; }
+            private set 
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+                ExcelFileException.ThrowIfStringNull(nameof(_extension), (object)value);
                 _extension = value;
             }
         }
         public string FullPath
         {
-            get { return _fullpath ?? throw new ArgumentNullException(nameof(_fullpath)); }
+            get { ExcelFileException.ThrowIfStringNull(nameof(_fullpath)); return _fullpath; }
             private set
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+                ExcelFileException.ThrowIfStringNull(nameof(_fullpath), (object)value);
                 _fullpath = value;
             }
         }
         public string FileName
         {
-            get { return _filename ?? throw new ArgumentNullException(nameof(_filename)); }
+            get { ExcelFileException.ThrowIfStringNull(nameof(_filename)); return _filename; }
             private set
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+                ExcelFileException.ThrowIfStringNull(nameof(_filename), (object)value);
                 _filename = value;
             }
         }
-        public string ConnectionStr
+        public string ConnectionStr 
         {
-            get { return _constr ?? throw new ArgumentNullException(nameof(_constr)); }
-            set
+            get { ExcelFileException.ThrowIfStringNull(nameof(_constr)); return _constr; } // установить через делегат и сделать private
+            set 
             {
-                if (string.IsNullOrEmpty(value))  throw new ArgumentNullException(nameof(value));
+                ExcelFileException.ThrowIfStringNull(nameof(_constr), (object)value);
                 _constr = value;
             }
         }
-        public List<string> ColumnsNameList
+        public string ColumnsNameList
         {
-            get { return _collists ?? throw new ArgumentNullException(nameof(_collists)); }
-            private set 
+            get { ExcelFileException.ThrowIfObjNull(nameof(_collists)); return _collists; } // установить через делегат и сделать private
+            set 
             {
-                if (value == null | value.Count == 0) throw new ArgumentException(nameof(value));
+                ExcelFileException.ThrowIfStringNull(nameof(_collists), (object)value);
                 _collists = value;
             }
          }
-        public List<string> SheetNames
+        public string SheetNames
         {
-            get { return _sheetnames ?? throw new ArgumentNullException(nameof(_sheetnames)); }
-            set
-            {
-                if (value == null | value.Count == 0) throw new ArgumentException(nameof(value));
+            get { ExcelFileException.ThrowIfObjNull(nameof(_sheetnames)); return _sheetnames; } // установить через делегат и сделать private
+            set 
+            { 
+                ExcelFileException.ThrowIfStringNull(nameof(_sheetnames),(object) value);
                 _sheetnames = value;
             }
         }
         public bool IsExistSheet(string name)
         {
             int i = 0;
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-            foreach (string sheet in _sheetnames)
-            {
+            ExcelFileException.ThrowIfStringNull(name);
+            string[] temp = _sheetnames.Split(';');
+            foreach (string sheet in temp)
                 if (sheet == name) i++;
-            }
-            return i >= 1 ? true:false ;
+            return i > 0 ? true : false;
+        }
+
+        public bool IsExistColumn(string name)
+        {
+            int i = 0;
+            ExcelFileException.ThrowIfStringNull(name);
+            string[] temp = _collists.Split(';');
+            foreach (string colname in temp)
+                if (colname == name) i++;
+            return i > 0 ? true : false;
         }
     }
     

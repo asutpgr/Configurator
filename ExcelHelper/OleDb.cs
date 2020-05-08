@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
-using System.Threading.Tasks;
 
 namespace ExcelHelper
 {
+    using ExcelHelper.Exceptions;
     public static class OleDb
     {
         private static string _ole_providers;
@@ -32,7 +32,7 @@ namespace ExcelHelper
         }
         public static string GenerateConnectionString(ExcelFile excel)
         {
-            if (excel == null) throw new ArgumentNullException(nameof(excel));
+            if (excel == null) throw new ExcelFileException($"Ссылна на объект {nameof(excel)} равна NULL ");
             string ext = excel.Extension.ToLower();
             OleDbConnectionStringBuilder strcon = new OleDbConnectionStringBuilder();
             switch (ext)  
@@ -56,32 +56,25 @@ namespace ExcelHelper
             excel.ConnectionStr = strcon.ToString();
             return strcon.ToString();
         }
-        public static List<string> GetSheetsNames(ExcelFile excel)
+        public static void GetSheetsNames(ExcelFile excel)
         {
             using (OleDbConnection connection = new OleDbConnection(excel.ConnectionStr))
             {
                 OleDbCommand cmd = new OleDbCommand() { Connection = connection };
-                List<string> list = new List<string>();
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
                     DataTable sheets = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
                     for (var i = 0; i < sheets.Rows.Count; i++)
-                    {
-                        list.Add(sheets.Rows[i]["TABLE_NAME"].ToString());
-                    }
+                        excel.SheetNames += $"{sheets.Rows[i]["TABLE_NAME"]};";
                 }
                 connection.Close();
-                excel.SheetNames = list;
-                return list;
             }
         }
         public static DataTable ReadData(ExcelFile excel,string sheetname)
         {
-            sheetname += "$";
-            if (excel == null) throw new ArgumentNullException(nameof(excel));
-            if (string.IsNullOrEmpty(sheetname)) throw new ArgumentNullException(nameof(sheetname));
-            if (!excel.IsExistSheet(sheetname)) throw new Exception($"Таблица {sheetname} не существует в файле {excel.FileName}.") ;
+            sheetname += "$"; 
+            ExcelFileException.ThrowIfSheetNotExist(excel, sheetname);
             var res = new DataTable();
             using (var connection = new OleDbConnection(excel.ConnectionStr))
             {

@@ -1,24 +1,19 @@
 ﻿using System;
-using ExcelHelper;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Data;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Configurator
 {
-    
+    using ExcelHelper;
+    using ExcelHelper.Exceptions;
+
     public partial class Form1 : Form
     {
         ExcelFile excel;
-        TaskScheduler _sh;
-        SynchronizationContext _sc;
         public Form1()
         {
             InitializeComponent();
-            _sh = TaskScheduler.FromCurrentSynchronizationContext();
-            _sc = SynchronizationContext.Current;
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -44,26 +39,14 @@ namespace Configurator
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            
-            try
-            {
-                OleDb.GenerateConnectionString(excel);
-                OleDb.GetSheetsNames(excel);
-                var res = await Task.Run(() => OleDb.ReadData(excel, txtnmlst.Text));
-                BeginInvoke(new MethodInvoker(() => dataGridView1.DataSource = res));
-            }
-            catch (Exception ex)
-            {
-                string message = $"Произошал ошибка. Сообщение:{ex.Message}.";
-                MessageBox.Show(message);
-            }
-            
+            OleDb.GenerateConnectionString(excel);
+            OleDb.GetSheetsNames(excel);
+            dataGridView1.DataSource = await Task.Run(() => OleDb.ReadData(excel, txtnmlst.Text));
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = null;
-            dataGridView1.Refresh();
+           
         }
     }
 }
