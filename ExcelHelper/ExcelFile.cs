@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-
+﻿using System.IO;
 namespace ExcelHelper
 {
     using Exceptions;
@@ -81,9 +78,8 @@ namespace ExcelHelper
         public bool IsExistSheet(string name)
         {
             int i = 0;
-            ExcelFileException.ThrowIfStringNull(name);
-            string[] temp = _sheetnames.Split(';');
-            foreach (string sheet in temp)
+            ExcelFileException.ThrowIfStringNull(name);     
+            foreach (string sheet in _sheetnames.Split(';'))
                 if (sheet == name) i++;
             return i > 0 ? true : false;
         }
@@ -92,13 +88,13 @@ namespace ExcelHelper
         {
             int i = 0;
             ExcelFileException.ThrowIfStringNull(name);
-            string[] temp = _collists.Split(';');
-            foreach (string colname in temp)
+            foreach (string colname in _collists.Split(';'))
                 if (colname == name) i++;
             return i > 0 ? true : false;
         }
+
+        
     }
-    
-}
+ }
 
 

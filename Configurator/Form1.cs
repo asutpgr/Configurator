@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Threading.Tasks;
-using System.Threading;
-
 namespace Configurator
 {
     using ExcelHelper;
-    using ExcelHelper.Exceptions;
 
     public partial class Form1 : Form
     {
@@ -18,7 +15,6 @@ namespace Configurator
         private void Form1_Load(object sender, EventArgs e)
         {
             cmbProv.Items.AddRange(OleDb.GetOleDBProviders().ToArray());
-            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,7 +42,7 @@ namespace Configurator
 
         private void button3_Click(object sender, EventArgs e)
         {
-           
+            
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Runtime.Remoting.Messaging;
 
 namespace ExcelHelper.Exceptions
 {
@@ -10,11 +8,13 @@ namespace ExcelHelper.Exceptions
         public ExcelFileException() : base()
         { }
         public ExcelFileException(string message) :base(message)
-        { }
+        {
+            message = Message;
+        }
         public ExcelFileException(string message, Exception inner) : base(message,inner) // реализовать по необходимости
         { }
        
-        public static void ThrowIfStringNull(string param_name, object setvalue)
+        public static void ThrowIfStringNull(string param_name, object setvalue) 
         {
             if (string.IsNullOrEmpty((string)setvalue))  
                 throw new ExcelFileException($"Присвоение в {param_name} значения равного NULL или Empty"); 

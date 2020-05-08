@@ -5,7 +5,7 @@ using System.Data.OleDb;
 
 namespace ExcelHelper
 {
-    using ExcelHelper.Exceptions;
+    using Exceptions;
     public static class OleDb
     {
         private static string _ole_providers;
