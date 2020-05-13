@@ -47,7 +47,10 @@
     <Compile Include="Exceptions\ExcelFileException.cs" />
     <Compile Include="OleDb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EventArgs\OledbEventArgs.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

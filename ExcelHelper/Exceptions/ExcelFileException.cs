@@ -28,11 +28,11 @@ namespace ExcelHelper.Exceptions
         {
             if (obj == null) throw new ExcelFileException($"Ссылка на экземпляр {obj} равен NULL");
         }
-        public static void ThrowIfFileNotExsist(string path, out FileInfo ofile)
+        public static void ThrowIfFileNotExsist(string path,FileInfo file)
         {
             ThrowIfStringNull(path);
-            ofile = new FileInfo(path);
-            if (!ofile.Exists) throw new ExcelFileException($"Файл <{ofile.FullName}> не существует");
+            file = new FileInfo(path);
+            if (!file.Exists) throw new ExcelFileException($"Файл <{file.FullName}> не существует");
         }
         public static void ThrowIfSheetNotExist(ExcelFile file,string name)
         {

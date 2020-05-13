@@ -1,99 +1,153 @@
 ﻿using System.IO;
+
 namespace ExcelHelper
 {
     using Exceptions;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+
     public sealed class ExcelFile
     {
-        private string _fullpath;
-        private string _filename;
-        private string _extension;
-        private string _constr;
-        private string _sheetnames;
-        private string _collists;
-        public enum Status { None, Initialized, Ready, Reading}
+        private string fullpath;
+        private string filename;
+        private string extension;
+        private string constr;
+        private string sheetnames;
+        private string columns;
+        private DataTable data;
+        private Status state;
+       
+        public enum Status { None, Initialized, Ready, ReadCompleted }
+        public Status State
+        {
+            get { ExcelFileException.ThrowIfStringNull(nameof(state)); return State; }
+            set
+            {
+                ExcelFileException.ThrowIfStringNull(nameof(state),(object) value);
+                state = value;
+            }
+        }
         public ExcelFile(string fullpath)
         {
-            ExcelFileException.ThrowIfFileNotExsist(fullpath, out FileInfo file);
-            _extension = file.Extension ;
-            _fullpath = file.FullName;
-            _filename = default(string);
-            _constr = default(string);
-            _sheetnames = default(string);
-            _collists = default(string); 
+            FileInfo file = new FileInfo(fullpath);
+            ExcelFileException.ThrowIfFileNotExsist(fullpath, file);
+            extension = file.Extension ;
+            this.fullpath = file.FullName;
+            filename = default(string);
+            constr = default(string);
+            sheetnames = default(string);
+            columns = default(string);
+            rows = default(string);
+            data = null;
+            State = Status.Initialized;
         }
         public string Extension 
         {
-            get { ExcelFileException.ThrowIfStringNull(nameof(_extension)); return _extension; }
+            get { ExcelFileException.ThrowIfStringNull(nameof(extension)); return extension; }
             private set 
             {
-                ExcelFileException.ThrowIfStringNull(nameof(_extension), (object)value);
-                _extension = value;
+                ExcelFileException.ThrowIfStringNull(nameof(extension), (object)value);
+                extension = value;
             }
         }
         public string FullPath
         {
-            get { ExcelFileException.ThrowIfStringNull(nameof(_fullpath)); return _fullpath; }
+            get { ExcelFileException.ThrowIfStringNull(nameof(fullpath)); return fullpath; }
             private set
             {
-                ExcelFileException.ThrowIfStringNull(nameof(_fullpath), (object)value);
-                _fullpath = value;
+                ExcelFileException.ThrowIfStringNull(nameof(fullpath), (object)value);
+                fullpath = value;
             }
         }
         public string FileName
         {
-            get { ExcelFileException.ThrowIfStringNull(nameof(_filename)); return _filename; }
+            get { ExcelFileException.ThrowIfStringNull(nameof(filename)); return filename; }
             private set
             {
-                ExcelFileException.ThrowIfStringNull(nameof(_filename), (object)value);
-                _filename = value;
+                ExcelFileException.ThrowIfStringNull(nameof(filename), (object)value);
+                filename = value;
             }
         }
         public string ConnectionStr 
         {
-            get { ExcelFileException.ThrowIfStringNull(nameof(_constr)); return _constr; } // установить через делегат и сделать private
+            get { ExcelFileException.ThrowIfStringNull(nameof(constr)); return constr; } // установить через делегат и сделать private
             set 
             {
-                ExcelFileException.ThrowIfStringNull(nameof(_constr), (object)value);
-                _constr = value;
+                ExcelFileException.ThrowIfStringNull(nameof(constr), (object)value);
+                constr = value;
+                State = Status.Ready;
             }
         }
         public string ColumnsNameList
         {
-            get { ExcelFileException.ThrowIfObjNull(nameof(_collists)); return _collists; } // установить через делегат и сделать private
+            get { ExcelFileException.ThrowIfObjNull(nameof(columns)); return columns; }
             set 
             {
-                ExcelFileException.ThrowIfStringNull(nameof(_collists), (object)value);
-                _collists = value;
+                ExcelFileException.ThrowIfStringNull(nameof(columns), (object)value);
+                columns = value;
             }
-         }
+        }
+        public string Rows
+        {
+            get { ExcelFileException.ThrowIfObjNull(nameof(rows)); return rows; }
+            set
+            {
+                ExcelFileException.ThrowIfStringNull(nameof(rows), (object)value);
+                columns = value;
+            }
+        }
         public string SheetNames
         {
-            get { ExcelFileException.ThrowIfObjNull(nameof(_sheetnames)); return _sheetnames; } // установить через делегат и сделать private
+            get { ExcelFileException.ThrowIfObjNull(nameof(sheetnames)); return sheetnames; } // установить через делегат и сделать private
             set 
             { 
-                ExcelFileException.ThrowIfStringNull(nameof(_sheetnames),(object) value);
-                _sheetnames = value;
+                ExcelFileException.ThrowIfStringNull(nameof(sheetnames),(object) value);
+                sheetnames = value;
+            }
+        }
+        public DataTable Data
+        {
+            get { ExcelFileException.ThrowIfObjNull(nameof(data)); return data; }
+            set
+            {
+                ExcelFileException.ThrowIfObjNull(value);
+                data = value;
             }
         }
         public bool IsExistSheet(string name)
         {
             int i = 0;
             ExcelFileException.ThrowIfStringNull(name);     
-            foreach (string sheet in _sheetnames.Split(';'))
+            foreach (string sheet in sheetnames.Split(';'))
                 if (sheet == name) i++;
             return i > 0 ? true : false;
         }
-
         public bool IsExistColumn(string name)
         {
             int i = 0;
             ExcelFileException.ThrowIfStringNull(name);
-            foreach (string colname in _collists.Split(';'))
+            foreach (string colname in columns.Split(';'))
                 if (colname == name) i++;
             return i > 0 ? true : false;
         }
-
-        
+        public List<List<string>> GetElements(int from_col, int from_row, int to_col, int to_row) // создать перегрузки
+        {
+            var res = new List<List<string>>();
+            for (int i = from_row; i <= to_row; i++)
+            {
+                List<string> item = new List<string>();
+                for (int j = from_col; j <= to_col; j++)
+                {
+                    item.Add(Data.Rows[i].ItemArray[j].ToString());
+                }
+                res.Add(item);
+            }
+            return res;
+        }
+        public string GetElements(object col, int row) { string res = null; return res; } // реализовать поиск элемента по индексу
+  
     }
  }
 
