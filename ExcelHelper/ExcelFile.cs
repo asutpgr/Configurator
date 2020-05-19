@@ -1,14 +1,14 @@
 ﻿using System.IO;
-
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 namespace ExcelHelper
 {
     using Exceptions;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
 
     public sealed class ExcelFile
+
     {
         private string fullpath;
         private string filename;
@@ -16,37 +16,29 @@ namespace ExcelHelper
         private string constr;
         private string sheetnames;
         private string columns;
+        private int[]  rows = default;
         private DataTable data;
         private Status state;
-       
+
         public enum Status { None, Initialized, Ready, ReadCompleted }
         public Status State
         {
-            get { ExcelFileException.ThrowIfStringNull(nameof(state)); return State; }
-            set
-            {
-                ExcelFileException.ThrowIfStringNull(nameof(state),(object) value);
-                state = value;
-            }
+            get { return state; }
+            set { state = value;}
         }
         public ExcelFile(string fullpath)
         {
             FileInfo file = new FileInfo(fullpath);
             ExcelFileException.ThrowIfFileNotExsist(fullpath, file);
-            extension = file.Extension ;
+            extension = file.Extension;
             this.fullpath = file.FullName;
-            filename = default(string);
-            constr = default(string);
-            sheetnames = default(string);
-            columns = default(string);
-            rows = default(string);
-            data = null;
+            filename = file.Name;
             State = Status.Initialized;
         }
-        public string Extension 
+        public string Extension
         {
             get { ExcelFileException.ThrowIfStringNull(nameof(extension)); return extension; }
-            private set 
+            private set
             {
                 ExcelFileException.ThrowIfStringNull(nameof(extension), (object)value);
                 extension = value;
@@ -70,10 +62,10 @@ namespace ExcelHelper
                 filename = value;
             }
         }
-        public string ConnectionStr 
+        public string ConnectionStr
         {
             get { ExcelFileException.ThrowIfStringNull(nameof(constr)); return constr; } // установить через делегат и сделать private
-            set 
+            set
             {
                 ExcelFileException.ThrowIfStringNull(nameof(constr), (object)value);
                 constr = value;
@@ -83,28 +75,29 @@ namespace ExcelHelper
         public string ColumnsNameList
         {
             get { ExcelFileException.ThrowIfObjNull(nameof(columns)); return columns; }
-            set 
-            {
-                ExcelFileException.ThrowIfStringNull(nameof(columns), (object)value);
-                columns = value;
-            }
-        }
-        public string Rows
-        {
-            get { ExcelFileException.ThrowIfObjNull(nameof(rows)); return rows; }
             set
             {
-                ExcelFileException.ThrowIfStringNull(nameof(rows), (object)value);
+                ExcelFileException.ThrowIfStringNull(nameof(columns), (object)value);
                 columns = value;
             }
         }
         public string SheetNames
         {
             get { ExcelFileException.ThrowIfObjNull(nameof(sheetnames)); return sheetnames; } // установить через делегат и сделать private
-            set 
-            { 
-                ExcelFileException.ThrowIfStringNull(nameof(sheetnames),(object) value);
+            set
+            {
+                ExcelFileException.ThrowIfStringNull(nameof(sheetnames), (object)value);
                 sheetnames = value;
+            }
+        }
+        public int[] Rows 
+        {
+            get { return rows;}
+            set
+            {
+                foreach (var item in value)
+                    if (item < 0) throw new ExcelFileException($"индексы должны быть больше/равны нулю");
+                rows = value;
             }
         }
         public DataTable Data
@@ -116,10 +109,12 @@ namespace ExcelHelper
                 data = value;
             }
         }
+
+
         public bool IsExistSheet(string name)
         {
             int i = 0;
-            ExcelFileException.ThrowIfStringNull(name);     
+            ExcelFileException.ThrowIfStringNull(name);
             foreach (string sheet in sheetnames.Split(';'))
                 if (sheet == name) i++;
             return i > 0 ? true : false;
@@ -132,23 +127,51 @@ namespace ExcelHelper
                 if (colname == name) i++;
             return i > 0 ? true : false;
         }
-        public List<List<string>> GetElements(int from_col, int from_row, int to_col, int to_row) // создать перегрузки
+        public DataTable GetElements(int from_col, int from_row, int to_col, int to_row) // с (row,col) по (row,col)
         {
-            var res = new List<List<string>>();
+            var tablefind = new DataTable() { TableName = "srch" };
             for (int i = from_row; i <= to_row; i++)
             {
-                List<string> item = new List<string>();
+                var row = tablefind.NewRow();
                 for (int j = from_col; j <= to_col; j++)
                 {
-                    item.Add(Data.Rows[i].ItemArray[j].ToString());
+                    if (tablefind.Columns.Count != (to_col - from_col + 1))
+                        tablefind.Columns.Add(new DataColumn($"{data.Columns[from_col + j].ColumnName}"));
+                    row[j-from_col]= data.Rows[i].ItemArray[j].ToString();
                 }
-                res.Add(item);
+                tablefind.Rows.Add();
+            }
+            return tablefind;
+        }
+        public string GetElement(object col, int row)
+        {
+            ExcelFileException.ThrowIfStringNull((string)col);
+            if ((int)col < 0 | row < 0) throw new ExcelFileException($"Столбцы могут быть только положительные.");
+            string res = null;
+            switch (col.GetType().ToString())
+            {
+                case "System.String":
+                { 
+                    if (IsExistColumn((string)col))
+                    {
+                        res = data.Rows[row][(string)col].ToString();
+                    }
+                    break;
+                }
+                case "System.Int32":
+                {
+                    res = data.Rows[row][(int)col].ToString();
+                    break;
+                }
+                default: 
+                    throw new Exception($"Форма колонки не правильно задан.");
             }
             return res;
-        }
-        public string GetElements(object col, int row) { string res = null; return res; } // реализовать поиск элемента по индексу
-  
+        } 
+
+       
+        // реализовать преобразование таблицы с названием нужных столбцов 
     }
- }
+}
 
 

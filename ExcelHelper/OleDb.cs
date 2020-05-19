@@ -5,7 +5,7 @@ using System.Data.OleDb;
 namespace ExcelHelper
 {
     using Exceptions;
-    public  class OleDb // определитсья делать его статикой или нет 50/50
+    public class OleDb 
     {
         public static event EventHandler<string> GetSheetsNameCompleted;
         public static event EventHandler<string[]> GetOleDbProvidersCompleted;
