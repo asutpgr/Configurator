@@ -37,7 +37,7 @@ namespace Configurator
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        MessageBox.Show($"{ex.Message} +{i} столбец. Исклчюенеи выскакивает: 1. Одиноковые имена столбцов. 2. Либо ячейка null ");
                         args.Data.Columns[i].ColumnName = $"{args.Data.Rows[row].ItemArray[i]}{i}";
                     }
                 }
