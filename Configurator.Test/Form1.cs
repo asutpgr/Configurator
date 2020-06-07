@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Data;
 
-namespace Configurator
+namespace Configurator.Test
 {
     using ExcelHelper;
     using System.Drawing;
@@ -69,7 +69,7 @@ namespace Configurator
             cmbProv.Items.AddRange(e);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 excel = new ExcelFile(openFileDialog1.FileName);
@@ -79,15 +79,15 @@ namespace Configurator
             GC.WaitForPendingFinalizers();
         }
 
-        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OpenFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
             label1.Text = openFileDialog1.FileName;
         }
-        private void cmbProv_SelectedIndexChanged(object sender, EventArgs e)
+        private void CmbProv_SelectedIndexChanged(object sender, EventArgs e)
         {
             OleDb.OleDbProvider = cmbProv.SelectedItem.ToString();
         }
-        private async void button2_Click(object sender, EventArgs e)
+        private async void Button2_Click(object sender, EventArgs e)
         {
             OleDb.GetSheetsNames(excel);
             var table = await Task.Run(() => OleDb.ReadData(excel, txtnmlst.Text));
@@ -111,13 +111,13 @@ namespace Configurator
             GC.WaitForPendingFinalizers();
         }
 
-        private void label2_Click(object sender, EventArgs e)
+        private void Label2_Click(object sender, EventArgs e)
         {
             int res = 1;
             label2.Text = res.GetType().ToString();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
             dataGridView1.DataSource = null;
         }

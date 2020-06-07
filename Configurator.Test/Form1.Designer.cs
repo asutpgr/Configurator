@@ -1,4 +1,4 @@
-﻿namespace Configurator
+﻿namespace Configurator.Test
 {
     partial class Form1
     {
@@ -6,7 +6,7 @@
         /// Обязательная переменная конструктора.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-      
+
         /// <summary>
         /// Освободить все используемые ресурсы.
         /// </summary>
@@ -53,7 +53,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Открыть файл";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // cmbProv
             // 
@@ -63,12 +63,12 @@
             this.cmbProv.Name = "cmbProv";
             this.cmbProv.Size = new System.Drawing.Size(230, 24);
             this.cmbProv.TabIndex = 1;
-            this.cmbProv.SelectedIndexChanged += new System.EventHandler(this.cmbProv_SelectedIndexChanged);
+            this.cmbProv.SelectedIndexChanged += new System.EventHandler(this.CmbProv_SelectedIndexChanged);
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
+            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.OpenFileDialog1_FileOk);
             // 
             // label1
             // 
@@ -88,7 +88,7 @@
             this.button2.TabIndex = 0;
             this.button2.Text = "Считать";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // dataGridView1
             // 
@@ -123,7 +123,7 @@
             this.button3.TabIndex = 6;
             this.button3.Text = "Очистить";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
             // 
             // label2
             // 

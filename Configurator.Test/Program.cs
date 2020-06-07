@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Configurator
+namespace Configurator.Test
 {
     static class Program
     {
