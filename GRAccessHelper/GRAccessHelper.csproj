@@ -51,6 +51,9 @@
     <Compile Include="Exceptions\Galaxy\GalaxyNullReferenceException.cs" />
     <Compile Include="Exceptions\Galaxy\GalaxyObjectAlreadyCheckOutedException.cs" />
     <Compile Include="Exceptions\Galaxy\GalaxyObjectNotFoundException.cs" />
+    <Compile Include="Extensions\IAttributeExtension.cs" />
+    <Compile Include="Extensions\IgObjectExtension.cs" />
+    <Compile Include="Extensions\IInstanceExtension.cs" />
     <Compile Include="Galaxy.cs" />
     <Compile Include="GalaxyRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

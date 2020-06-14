@@ -14,8 +14,12 @@ namespace GRAccessHelper
         public static List<string> GetGalaxiesNames(string nodeName = null)
         {
             List<string> result = new List<string>();
-            IGalaxies gRepos = _grAccessApp.QueryGalaxies(nodeName);
-            if (!_grAccessApp.CommandResult.Successful) 
+            IGalaxies gRepos = null;
+            if (string.IsNullOrWhiteSpace(nodeName))
+                gRepos = _grAccessApp.QueryGalaxies("localhost");
+            else
+                gRepos = _grAccessApp.QueryGalaxies(nodeName);
+            if (!_grAccessApp.CommandResult.Successful)
                 throw new GalaxyExceptions(_grAccessApp.CommandResult);
             if (gRepos != null)
                 foreach (IGalaxy item in gRepos)
