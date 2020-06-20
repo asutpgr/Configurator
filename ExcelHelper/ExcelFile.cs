@@ -121,7 +121,7 @@ namespace ExcelHelper
         }
         public bool IsExistColumn(string name)
         {
-            int i = 0;
+            int i = 0; 
             ExcelFileException.ThrowIfStringNull(name);
             foreach (string colname in columns.Split(';'))
                 if (colname == name) i++;

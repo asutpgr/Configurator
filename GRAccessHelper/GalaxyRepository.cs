@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GRAccessHelper
 {
-    using Exceptions;
+    using Exceptions.Galaxy;
     using ArchestrA.GRAccess;
     public static class GalaxyRepository
     {

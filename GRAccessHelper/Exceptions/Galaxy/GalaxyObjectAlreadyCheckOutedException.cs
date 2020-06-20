@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace GRAccessHelper.Exceptions
+namespace GRAccessHelper.Exceptions.Galaxy
 {
     public class GalaxyObjectAlreadyCheckOutedException : GalaxyExceptions
     {
-        public GalaxyObjectAlreadyCheckOutedException(string objectName) : base($"Для объекта {objectName} уже выполнен CheckOut!")
+        public GalaxyObjectAlreadyCheckOutedException(string objectName) : base($"Объект {objectName} уже редактируется!")
         {
 
         }

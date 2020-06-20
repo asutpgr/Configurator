@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace GRAccessHelper.Extensions
 {
     using ArchestrA.GRAccess;
-    using Exceptions;
+    using Exceptions.Intsance;
    public static class IInstanceExtension
     {
         // Деплоим экземпляр асинхронно
@@ -22,7 +22,7 @@ namespace GRAccessHelper.Extensions
                    ECascade.dontCascade);
            });
             if (!inst.CommandResult.Successful)
-                GalaxyExceptions.ThrowIfNoSuccess(inst.CommandResult);
+                InstanceException.ThrowIfNoSuccess(inst.CommandResult);
         }
         // Андеплоим экземпляр асинхронно
         public async static Task UnDeployAsync(this IInstance inst)
@@ -36,11 +36,11 @@ namespace GRAccessHelper.Extensions
                     ECascade.doCascade);
             });
             if (!inst.CommandResult.Successful)
-                GalaxyExceptions.ThrowIfNoSuccess(inst.CommandResult);
+                InstanceException.ThrowIfNoSuccess(inst.CommandResult);
         }
         //Получаем сообщение о последней ошибке
         public static string GetFailMsg(this IInstance inst)
-        {
+        { 
             if (inst == null)
                 throw new ArgumentNullException(nameof(inst));
             if (inst.CommandResult == null || inst.CommandResult.Successful)
@@ -48,8 +48,5 @@ namespace GRAccessHelper.Extensions
             else
                 return $"{inst.CommandResult.Text}:{inst.CommandResult.CustomMessage}";
         }
-
-
-
     }
 }

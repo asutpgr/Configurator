@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GRAccessHelper.Exceptions
+namespace GRAccessHelper.Exceptions.Galaxy
 {
     public class GalaxyObjectNotFoundException : GalaxyExceptions 
     {

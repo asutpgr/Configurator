@@ -3,7 +3,8 @@
 namespace GRAccessHelper
 {
     using ArchestrA.GRAccess;
-    using Exceptions;
+    using Exceptions.Galaxy;
+    using Exceptions.IAttribute;
     using Extensions;
 
     public class Galaxy
@@ -242,7 +243,7 @@ namespace GRAccessHelper
                                         _galaxy.CommandResult != null && !_galaxy.CommandResult.Successful ? _galaxy.CommandResult.Text + " "
                                         + _galaxy.CommandResult.CustomMessage :
                                          "Возможно такой объект уже существует.");
-                throw new NullReferenceException(msg);
+                throw new GalaxyCannotCreateInstanceException(tagName, msg, template, template.CommandResult);
             }
             if (!string.IsNullOrWhiteSpace(containerName))
             {
@@ -252,10 +253,13 @@ namespace GRAccessHelper
                     instance.Container = containerName;
                     var text = instance.CommandResult.Text + " - " + instance.CommandResult.CustomMessage;
                     GalaxyExceptions.ThrowIfNoSuccess(instance.CommandResult, $"Ошибка при назначении объекту {tagName} контейнера {containerName}\n");
-
+                    
                 }
                 catch { throw; }
-                finally { ((IgObject)instance).SaveAndCheckIn($"Установка для объекта {tagName} Container={containerName}"); }
+                finally 
+                { 
+                    ((IgObject)instance).SaveAndCheckIn($"Установка для объекта {tagName} Container={containerName}"); 
+                }
             }
             GalaxyExceptions.ThrowIfNoSuccess(CommandResult);
 
@@ -323,6 +327,11 @@ namespace GRAccessHelper
                 igobj.CheckIn(dt.ToString("yyyyMMdd HH:mm:ss"));
         }
         #endregion
+
+        #region Работа с атрибутами
+            //TODO: реализовать работу с атрибутами
+        #endregion
+
 
         #endregion
     }
