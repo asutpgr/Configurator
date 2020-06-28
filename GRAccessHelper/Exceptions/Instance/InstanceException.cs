@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GRAccessHelper.Exceptions.Intsance
+namespace GRAccessHelper.Exceptions.Instance
 {
     using ArchestrA.GRAccess;
     public class InstanceException : Exception

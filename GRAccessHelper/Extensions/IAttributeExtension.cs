@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using ArchestrA.GRAccess;
 
 namespace GRAccessHelper.Extensions
 {
-    using ArchestrA.GRAccess;
     using Exceptions.IAttribute;
 
     public static class IAttributeExtension

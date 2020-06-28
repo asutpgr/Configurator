@@ -1,11 +1,14 @@
 ﻿using System;
-
+using ArchestrA.GRAccess;
+using Galaxy.Model.Attributes;
 namespace GRAccessHelper
-{
-    using ArchestrA.GRAccess;
+{     
     using Exceptions.Galaxy;
+    using Exceptions.Instance;
     using Exceptions.IAttribute;
     using Extensions;
+    using Exceptions.IgObject;
+    using System.Collections.Generic;
 
     public class Galaxy
     {
@@ -109,7 +112,7 @@ namespace GRAccessHelper
         // Возвращает IgObjects коллекцию по списку имен
         public IgObjects GetTemplates(string[] tagNames)
         {
-            var objects = _galaxy.QueryObjectsByName(EgObjectIsTemplateOrInstance.gObjectIsInstance, ref tagNames);
+            var objects = _galaxy.QueryObjectsByName(EgObjectIsTemplateOrInstance.gObjectIsTemplate, ref tagNames);
             GalaxyExceptions.ThrowIfNoSuccess(CommandResult);
             return objects;
         }
@@ -272,8 +275,86 @@ namespace GRAccessHelper
             if (string.IsNullOrWhiteSpace(templateName)) throw new ArgumentException(nameof(templateName));
             return CreateInstance(tagName, GetTemplate(templateName), containerName);
         }
-        // 
+        // Получаем GRNODE
+        public IInstance GetGRPlatform()
+        {
+            foreach (IgObject gobject in GetObjectsBasedOn("$WinPlatform"))
+            {
+                if (GetValueOfAttribute(gobject, "_GRPrimitiveId").GetInteger() > 0)
+                    return (IInstance)gobject;
+            }
+            return null;
+        }
+        // Получаем объекты, порожденные от БАЗОВОГО ШАБЛОНА
+        public IgObjects GetObjectsBasedOn(string basedOn)
+        {
+            if (string.IsNullOrEmpty(basedOn))
+                throw new ArgumentNullException($"Имя базового шаблона не может быть пустым.");
+            return _galaxy.QueryObjects(EgObjectIsTemplateOrInstance.gObjectIsInstance, EConditionType.basedOn, basedOn, EMatch.MatchCondition);
+        }
+        // Деплоим инстанс и всего host  ОПРЕДЕЛЯЕТСя ПО ВКЛАКДКЕ DEPLOYMENT
+        public void DeployInstance(IInstance inst, bool cascade)
+        {
+            if (inst == null)
+                throw new InstanceNullReferenceException();
+            IInstance host = GetInstance(inst.Host);
+            if (host != null)
+                DeployInstance(host, cascade);
+            if (inst.DeploymentStatus != EDeploymentStatus.deployed)
+                inst.Deploy(EActionForCurrentlyDeployedObjects.redeployOriginal,
+                            ESkipIfCurrentlyUndeployed.dontSkipIfCurrentlyUndeployed,
+                            EDeployOnScan.doDeployOnScan,EForceOffScan.doForceOffScan,
+                            cascade ? ECascade.doCascade : ECascade.dontCascade, 
+                            true);
+        }
+        
+        //Андеплоим инстанс (только его), но не платформу GR 
+        public void UndeployInstance(IInstance instance)
+        {
+            if (instance == null)
+                throw new ArgumentNullException("instance");
 
+            if (instance != GetGRPlatform() && instance.DeploymentStatus != EDeploymentStatus.notDeployed)
+            {
+                instance.Undeploy(EForceOffScan.doForceOffScan, ECascade.doCascade, true);
+            }
+        }
+        // Деплоим инстансы
+        public void DeployInstances(IgObjects gobjects)
+        {
+            if (gobjects == null)
+                throw new IgObjectsNullReferenceExceptions();
+            gobjects.Deploy(EActionForCurrentlyDeployedObjects.redeployOriginal, 
+                            ESkipIfCurrentlyUndeployed.dontSkipIfCurrentlyUndeployed, 
+                            EDeployOnScan.doDeployOnScan, 
+                            EForceOffScan.doForceOffScan, 
+                            true);
+
+        }
+
+        // деплоим Аrea и все его зоны
+        public void DeployAreas(IInstance inst)
+        {
+            if (inst == null) 
+                throw new InstanceNullReferenceException();
+            if (inst.DeploymentStatus != EDeploymentStatus.deployed)
+                DeployInstance(inst, true);
+            foreach (IgObject gobj in GetInstancesInArea(inst.Tagname))
+                DeployAreas((IInstance)gobj);
+        }
+
+        // андеплоим Area и все его зоны
+        public void UndeployAreas(IInstance instance)
+        {
+            if (instance == null)
+                throw new ArgumentNullException("instance");
+            if (instance.DeploymentStatus != EDeploymentStatus.notDeployed)
+                UndeployInstance(instance);
+            foreach (IgObject gobject in GetInstancesInArea( instance.Tagname))
+                UndeployAreas((IInstance)gobject);
+        }
+
+       
         #endregion
 
         #region Общиее
@@ -329,7 +410,34 @@ namespace GRAccessHelper
         #endregion
 
         #region Работа с атрибутами
-            //TODO: реализовать работу с атрибутами
+        //TODO: реализовать работу с атрибутами
+        // возвращает значение атрибта
+        public IMxValue GetValueOfAttribute(IgObject gobj, string attr_name)
+        {
+            if (string.IsNullOrEmpty(attr_name))
+                throw new AttributeNullReferenceException();
+            var attrs = gobj.GetAttributesAny();
+            return attrs[attr_name].value;
+        }
+        //установка значения атриибутов
+        public void SetValueForAttributes(IgObject gobj, AttributesDictionary source)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            if (source == null)
+                throw new ArgumentNullException($"Класс-слоаварь равен null");
+            gobj.CheckOutWithCheckStatus();
+
+            foreach (KeyValuePair<string, MxValue> item in source)
+            {
+                IAttribute attr = gobj.GetAttributesAny()[item.Key];
+                if (attr.CommandResult.Successful && attr != null)
+                    attr.SetValue(item.Value);
+            }
+            gobj.SaveAndCheckIn();
+            if (!gobj.CommandResult.Successful)
+                throw new GalaxyExceptions($"Не удается охранить объект {gobj.Tagname}.");
+        }
         #endregion
 
 

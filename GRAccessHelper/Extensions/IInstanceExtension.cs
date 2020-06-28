@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace GRAccessHelper.Extensions
 {
     using ArchestrA.GRAccess;
-    using Exceptions.Intsance;
+    using Exceptions.Instance;
    public static class IInstanceExtension
     {
         // Деплоим экземпляр асинхронно

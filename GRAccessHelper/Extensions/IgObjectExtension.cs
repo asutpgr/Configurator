@@ -1,10 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using ArchestrA.GRAccess;
+using Galaxy.Model.Attributes;
 
 namespace GRAccessHelper.Extensions
 {
-    using ArchestrA.GRAccess;
-    using Exceptions.Galaxy;
     using Exceptions.IAttribute;
+    using Exceptions.IgObject;
+    using Exceptions.Galaxy;
+    using System.IO;
+    using System.Linq;
+    using System.CodeDom;
+    using System.Security;
+    using System.Data.Common;
+
     public static class IgObjectExtension
     {
         #region Базовые методы
@@ -22,7 +32,7 @@ namespace GRAccessHelper.Extensions
                 obj.CheckIn(comment);
             else 
                 obj.CheckIn();
-        } 
+        }
         #endregion
 
         #region Работа с атрибутами
@@ -57,6 +67,7 @@ namespace GRAccessHelper.Extensions
         }
         //Получить тип
         // если вернулось MxNoData - значит атрибута не существует
+        // TODO: проверить нужен ли check out
         public static MxDataType GetAttributeMxDataType(this IgObject gobj, string attrname)
         {
             if (gobj == null) 
@@ -90,6 +101,40 @@ namespace GRAccessHelper.Extensions
             else
                 return null;
         }
+        // делаем словарь готовый для атрмбутов, определяющих положение в модели (имя атрибута)(делегат <igobj><value>)
+        public static Dictionary<string, Action<IgObject, string>> SystemAttributes =
+                                   new Dictionary<string, Action<IgObject, string>>(StringComparer.InvariantCultureIgnoreCase)
+                                   {
+                                       {"Area",(gobj,value) => gobj.Area = value },
+                                       {"ContainedName",(gobj,value) => gobj.ContainedName = value },
+                                       {"Host",(gobj,value) => gobj.Host = value },
+                                       {"Container",(gobj,value) => gobj.Container = value },
+                                       {"TagName",(gobj,value) => gobj.Tagname = value }
+                                   };
+        // Получаем имена польовательских атрибутов( атрибуты созданные в шаблоне так же вляются пользовательскими)
+        public static string[] GetUDANames(this IgObject gobj)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            var attrStringXML = gobj.Attributes["_InheritedUDAs"].value.GetString();
+            XmlSerializer makeXML = new XmlSerializer(typeof(UDAInfo));
+            var attrString = new StringReader(attrStringXML);
+            var attrUDeserialize = (UDAInfo)makeXML.Deserialize(attrString);
+            return attrUDeserialize.Attribute.Select(x => x.Name).ToArray();
+        }
+
+        public static Dictionary<string,string> GetUDAValues(this IgObject gobj)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            Dictionary<string, string> udas = new Dictionary<string, string>();
+            var attrs = gobj?.GetAttributesAny();
+            var uda_names = gobj?.GetUDANames();
+            foreach (var name in uda_names)
+                udas.Add(name, attrs[name].value.GetString());
+            return udas;
+        }
+
         #endregion
     }
 }
