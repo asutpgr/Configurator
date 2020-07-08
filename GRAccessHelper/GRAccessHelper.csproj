@@ -34,7 +34,8 @@
     <Reference Include="ArchestrA.GRAccess, Version=1.7.0.0, Culture=neutral, PublicKeyToken=23106a86e706d0ae">
       <HintPath>..\..\WW-GRAccessTookit-2014\Common Files\ArchestrA\ArchestrA.GRAccess.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute\AttributesDictionary.cs" />
+    <Compile Include="Attribute\UDAInfo.cs" />
     <Compile Include="Exceptions\Galaxy\GalaxyCannotCreateInstanceException.cs" />
     <Compile Include="Exceptions\Galaxy\GalaxyExceptions.cs" />
     <Compile Include="Exceptions\Galaxy\GalaxyNullReferenceException.cs" />
@@ -60,15 +63,9 @@
     <Compile Include="Extensions\IAttributeExtension.cs" />
     <Compile Include="Extensions\IgObjectExtension.cs" />
     <Compile Include="Extensions\IInstanceExtension.cs" />
-    <Compile Include="Galaxy.cs" />
+    <Compile Include="GalaxyUtils.cs" />
     <Compile Include="GalaxyRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Galaxy.Model\Galaxy.Model.csproj">
-      <Project>{018538ef-29a3-4496-82a5-6321ba8d44e8}</Project>
-      <Name>Galaxy.Model</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

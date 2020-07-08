@@ -1,7 +1,8 @@
 ﻿using System;
+using ArchestrA.GRAccess;
 namespace GRAccessHelper.Exceptions.Galaxy
 {
-    using ArchestrA.GRAccess;
+    
     public class GalaxyExceptions : Exception
     {
         public GalaxyExceptions() : base()
@@ -15,6 +16,7 @@ namespace GRAccessHelper.Exceptions.Galaxy
 
         public GalaxyExceptions(string message, ICommandResult res) : base(message + " (" + ((res?.Text + " - ")) + (res?.CustomMessage ?? "") + ")")
         { }
+   
 
         public static void ThrowIfNoSuccess(ICommandResult res, string message = null)
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using ArchestrA.GRAccess;
-using Galaxy.Model.Attributes;
 namespace GRAccessHelper
 {     
     using Exceptions.Galaxy;
@@ -8,9 +7,9 @@ namespace GRAccessHelper
     using Exceptions.IAttribute;
     using Extensions;
     using Exceptions.IgObject;
-    using System.Collections.Generic;
+    using Attribute;
 
-    public class Galaxy
+    public class GalaxyUtils
     {
         #region Поле
         //Поле
@@ -27,7 +26,7 @@ namespace GRAccessHelper
 
         #region Конструкторы
         //Создание Galaxy
-        public Galaxy(string galaxyName, bool createIfNotExist = false, string hostname = null, string templateName = null)
+        public GalaxyUtils(string galaxyName, bool createIfNotExist = false, string hostname = null, string templateName = null)
         {
             _galaxy = RelateToGalaxy(galaxyName, createIfNotExist, hostname);
         }
@@ -280,7 +279,7 @@ namespace GRAccessHelper
         {
             foreach (IgObject gobject in GetObjectsBasedOn("$WinPlatform"))
             {
-                if (GetValueOfAttribute(gobject, "_GRPrimitiveId").GetInteger() > 0)
+                if (GetMxValueAttribute(gobject, "_GRPrimitiveId").GetInteger() > 0)
                     return (IInstance)gobject;
             }
             return null;
@@ -306,6 +305,8 @@ namespace GRAccessHelper
                             EDeployOnScan.doDeployOnScan,EForceOffScan.doForceOffScan,
                             cascade ? ECascade.doCascade : ECascade.dontCascade, 
                             true);
+            if (!inst.CommandResult.Successful)
+                throw new GalaxyObjectDeployException(inst.Tagname, inst.CommandResult);
         }
         
         //Андеплоим инстанс (только его), но не платформу GR 
@@ -318,8 +319,11 @@ namespace GRAccessHelper
             {
                 instance.Undeploy(EForceOffScan.doForceOffScan, ECascade.doCascade, true);
             }
+            if (!instance.CommandResult.Successful)
+                throw new GalaxyObjectDeployException(instance.Tagname, instance.CommandResult);
         }
         // Деплоим инстансы
+        // TODO: сделать отслеивание какие конкретно объеты не азадеплоились
         public void DeployInstances(IgObjects gobjects)
         {
             if (gobjects == null)
@@ -329,7 +333,8 @@ namespace GRAccessHelper
                             EDeployOnScan.doDeployOnScan, 
                             EForceOffScan.doForceOffScan, 
                             true);
-
+            if (!gobjects.CommandResults.CompletelySuccessful)
+                throw new GalaxyObjectDeployException(gobjects.CommandResults);
         }
 
         // деплоим Аrea и все его зоны
@@ -355,6 +360,97 @@ namespace GRAccessHelper
         }
 
        
+        #endregion
+
+        #region Работа с атрибутами
+        //TODO: реализовать работу с атрибутами
+        // возвращает значение атрибта в MX
+        public IMxValue GetMxValueAttribute(IgObject gobj, string attr_name)
+        {
+            if (string.IsNullOrEmpty(attr_name))
+                throw new AttributeNullReferenceException();
+            var attrs = gobj.GetAttributesAny();
+            return attrs[attr_name].value;
+        }
+        //установка значения атриибутов
+        public void SetValueAttributes(IgObject gobj, AttributesDictionary source)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            if (source == null)
+                throw new ArgumentNullException($"Класс-слоаварь равен null");
+            gobj.CheckOutWithCheckStatus();
+
+            foreach (var item in source)
+            {
+                IAttribute attr = gobj.GetAttributesAny()[item.Key];
+                if (attr.CommandResult.Successful && attr != null)
+                    attr.SetValue(item.Value);
+            }
+            gobj.SaveAndCheckIn();
+            if (!gobj.CommandResult.Successful)
+                throw new GalaxyExceptions($"Не удается охранить объект {gobj.Tagname}.");
+        }
+        // Создаем значение типа MX
+        public static MxValue CreateMxValue(MxDataType type, object value)
+        {
+            MxValue val = new MxValue();
+            switch (type)
+            {
+                case MxDataType.MxDataTypeUnknown:
+                    break;
+                case MxDataType.MxNoData:
+                    break;
+                case MxDataType.MxBoolean:
+                    val.PutBoolean(bool.Parse(value?.ToString() ?? "false"));
+                    break;
+                case MxDataType.MxInteger:
+                    val.PutInteger(int.Parse(value?.ToString() ?? "0"));
+                    break;
+                case MxDataType.MxFloat:
+                    val.PutFloat(float.Parse(value?.ToString() ?? "0"));
+                    break;
+                case MxDataType.MxDouble:
+                    val.PutDouble(double.Parse(value?.ToString() ?? "0"));
+                    break;
+                case MxDataType.MxString:
+                    val.PutInternationalString(1049, value?.ToString() ?? "");
+                    break;
+                case MxDataType.MxTime:
+                    break;
+                case MxDataType.MxElapsedTime:
+                    break;
+                case MxDataType.MxReferenceType:
+                    break;
+                case MxDataType.MxStatusType:
+                    MxStatus stat = new MxStatus();
+                    stat.success = 1;
+                    val.PutMxStatus(stat);
+                    break;
+                case MxDataType.MxDataTypeEnum:
+                    break;
+                case MxDataType.MxSecurityClassificationEnum:
+                    break;
+                case MxDataType.MxDataQualityType:
+                    break;
+                case MxDataType.MxQualifiedEnum:
+                    break;
+                case MxDataType.MxQualifiedStruct:
+                    break;
+                case MxDataType.MxInternationalizedString:
+                    val.PutInternationalString(1049, value?.ToString() ?? "");
+                    break;
+                case MxDataType.MxBigString:
+                    val.PutInternationalString(1049, value?.ToString() ?? "");
+                    break;
+                case MxDataType.MxDataTypeEND:
+                    break;
+                default:
+                    break;
+            }
+            return val;
+        }
+        
         #endregion
 
         #region Общиее
@@ -408,39 +504,8 @@ namespace GRAccessHelper
                 igobj.CheckIn(dt.ToString("yyyyMMdd HH:mm:ss"));
         }
         #endregion
-
-        #region Работа с атрибутами
-        //TODO: реализовать работу с атрибутами
-        // возвращает значение атрибта
-        public IMxValue GetValueOfAttribute(IgObject gobj, string attr_name)
-        {
-            if (string.IsNullOrEmpty(attr_name))
-                throw new AttributeNullReferenceException();
-            var attrs = gobj.GetAttributesAny();
-            return attrs[attr_name].value;
-        }
-        //установка значения атриибутов
-        public void SetValueForAttributes(IgObject gobj, AttributesDictionary source)
-        {
-            if (gobj == null)
-                throw new IgObjectsNullReferenceExceptions();
-            if (source == null)
-                throw new ArgumentNullException($"Класс-слоаварь равен null");
-            gobj.CheckOutWithCheckStatus();
-
-            foreach (KeyValuePair<string, MxValue> item in source)
-            {
-                IAttribute attr = gobj.GetAttributesAny()[item.Key];
-                if (attr.CommandResult.Successful && attr != null)
-                    attr.SetValue(item.Value);
-            }
-            gobj.SaveAndCheckIn();
-            if (!gobj.CommandResult.Successful)
-                throw new GalaxyExceptions($"Не удается охранить объект {gobj.Tagname}.");
-        }
-        #endregion
-
-
+     
+         
         #endregion
     }
 }

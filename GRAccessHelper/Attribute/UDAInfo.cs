@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Galaxy.Model.Attributes
+namespace GRAccessHelper.Attribute
 {
     [XmlRoot(ElementName = "Attribute")]
     public class Attribute

@@ -33,6 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ArchestrA.GRAccess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=23106a86e706d0ae">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\..\..\Windows\assembly\GAC\ArchestrA.GRAccess\2.0.0.0__23106a86e706d0ae\ArchestrA.GRAccess.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,6 +57,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Galaxy.cs" />
+    <Compile Include="Model\Interfaces\IGObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -84,6 +91,10 @@
     <ProjectReference Include="..\ExcelHelper\ExcelHelper.csproj">
       <Project>{7a4c1d4a-134e-4426-a75c-9a13a3a36207}</Project>
       <Name>ExcelHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GRAccessHelper\GRAccessHelper.csproj">
+      <Project>{a5d86f7b-c6f5-4569-8d85-d8540a863d6c}</Project>
+      <Name>GRAccessHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
