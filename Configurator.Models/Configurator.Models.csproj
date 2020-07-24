@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{018538EF-29A3-4496-82A5-6321BA8D44E8}</ProjectGuid>
+    <ProjectGuid>{FB3E571E-7E69-4218-8340-FBE11D4F2169}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Galaxy.Model</RootNamespace>
-    <AssemblyName>Galaxy.Model</AssemblyName>
+    <RootNamespace>Configurator.Models</RootNamespace>
+    <AssemblyName>Configurator.Models</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,8 +32,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ArchestrA.GRAccess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=23106a86e706d0ae">
-      <HintPath>..\..\..\Windows\assembly\GAC\ArchestrA.GRAccess\2.0.0.0__23106a86e706d0ae\ArchestrA.GRAccess.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\..\..\Windows\assembly\GAC\ArchestrA.GRAccess\2.0.0.0__23106a86e706d0ae\ArchestrA.GRAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,15 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Interfaces\IGObject.cs" />
-    <Compile Include="Model\Galaxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GRAccessHelper\GRAccessHelper.csproj">
-      <Project>{a5d86f7b-c6f5-4569-8d85-d8540a863d6c}</Project>
-      <Name>GRAccessHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

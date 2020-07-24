@@ -7,8 +7,7 @@ namespace GRAccessHelper
     using Exceptions.IAttribute;
     using Extensions;
     using Exceptions.IgObject;
-    using Attribute;
-
+    using Utils;
     public class GalaxyUtils
     {
         #region Поле
@@ -53,12 +52,12 @@ namespace GRAccessHelper
         }
 
         // Подключение к Galaxy
-        public void Login(string userName = null, string password = null, bool? bForceSynchronization = null)
+        public void Login(string userName = null, string password = null, bool bForceSynchronization = false)
         {
-            if (bForceSynchronization == null)
+            if (!bForceSynchronization)
                 _galaxy.Login(userName, password);
             else
-                _galaxy.LoginEx(userName, password, bForceSynchronization.Value);
+                _galaxy.LoginEx(userName, password, bForceSynchronization);
             GalaxyExceptions.ThrowIfNoSuccess(CommandResult);
         }
         // Отключенеи от Галактики
@@ -81,6 +80,7 @@ namespace GRAccessHelper
         #endregion
 
         #region Методы для шаблонов
+        
         // Получает шаблон, если такой существует
         public ITemplate GetTemplateIfExists(string tagName)
         {
@@ -180,9 +180,9 @@ namespace GRAccessHelper
         public IgObjects GetInstancesContainedIn(string tagName)
         {
             if (string.IsNullOrEmpty(tagName)) throw new ArgumentNullException(nameof(tagName));
-            var objects = _galaxy.QueryObjects(EgObjectIsTemplateOrInstance.gObjectIsInstance, EConditionType.containedBy, tagName, EMatch.MatchCondition);
+            var gobjects = _galaxy.QueryObjects(EgObjectIsTemplateOrInstance.gObjectIsInstance, EConditionType.containedBy, tagName, EMatch.MatchCondition);
             GalaxyExceptions.ThrowIfNoSuccess(CommandResult);
-            return objects;
+            return gobjects;
         }
 
         // возвращает экземпляры в указанном Area( tagName - имя контейнера)
@@ -363,7 +363,6 @@ namespace GRAccessHelper
         #endregion
 
         #region Работа с атрибутами
-        //TODO: реализовать работу с атрибутами
         // возвращает значение атрибта в MX
         public IMxValue GetMxValueAttribute(IgObject gobj, string attr_name)
         {
@@ -450,9 +449,11 @@ namespace GRAccessHelper
             }
             return val;
         }
-        
+
+         
         #endregion
 
+  
         #region Общиее
         //Возвращает пустую коллекцию
         public IgObjects CreateEmptyGalaxyObjectCollection()
@@ -483,7 +484,8 @@ namespace GRAccessHelper
             foreach (var item in objtodel)
             {
                 var inst = GetInstanceIfExists(item);
-                if (inst != null) inst.DeleteInstance(EForceDeleteInstanceOption.dontForceInstanceDelete);
+                if (inst != null)
+                    inst.DeleteInstance(EForceDeleteInstanceOption.dontForceInstanceDelete);
             }
         }
         //возвращает причину ошибки последней операции 

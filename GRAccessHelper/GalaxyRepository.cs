@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using ArchestrA.GRAccess;
 namespace GRAccessHelper
 {
     using Exceptions.Galaxy;
-    using ArchestrA.GRAccess;
     public static class GalaxyRepository
     {
         private static GRAccessApp _grAccessApp = new GRAccessApp();
 
         // Получение списка названий галактик на GRNode
-        public static List<string> GetGalaxiesNames(string nodeName = null)
+        public static List<string> GetGalaxiesNames(string nodeName = null) 
         {
             List<string> result = new List<string>();
             IGalaxies gRepos = null;

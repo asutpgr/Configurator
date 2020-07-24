@@ -4,16 +4,13 @@ using System.Xml.Serialization;
 using ArchestrA.GRAccess;
 using System.IO;
 using System.Linq;
-
+using Configurator.Model.XML;
 namespace GRAccessHelper.Extensions
 {
     using Exceptions.IAttribute;
     using Exceptions.IgObject;
     using Exceptions.Galaxy;
-    using Attribute;
-    
-   
-
+     
     public static class IgObjectExtension
     {
         #region Базовые методы
@@ -112,7 +109,19 @@ namespace GRAccessHelper.Extensions
                                        {"TagName",(gobj,value) => gobj.Tagname = value }
                                    };
         // Получаем имена польовательских атрибутов( атрибуты созданные в шаблоне так же вляются пользовательскими)
-        public static string[] GetUDANames(this IgObject gobj)
+        public static string[] GetMineUDANames(this IgObject gobj)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+
+            var attrStringXML_mine = gobj.Attributes["UDAs"].value.GetString();
+            XmlSerializer makeXML_mine = new XmlSerializer(typeof(UDAInfo));
+            var attrString_mine = new StringReader(attrStringXML_mine);
+            var attrUDeserialize_mine = (UDAInfo)makeXML_mine.Deserialize(attrString_mine);
+            var res_mine = attrUDeserialize_mine.Attribute.Select(x => x.Name);
+            return res_mine.ToArray();
+        }
+        public static string[] GetInheritsUDANames(this IgObject gobj)
         {
             if (gobj == null)
                 throw new IgObjectsNullReferenceExceptions();
@@ -120,15 +129,8 @@ namespace GRAccessHelper.Extensions
             XmlSerializer makeXML_inh = new XmlSerializer(typeof(UDAInfo));
             var attrString_inh = new StringReader(attrStringXML_inh);
             var attrUDeserialize_inh = (UDAInfo)makeXML_inh.Deserialize(attrString_inh);
-
-            var attrStringXML_mine = gobj.Attributes["UDAs"].value.GetString();
-            XmlSerializer makeXML_mine = new XmlSerializer(typeof(UDAInfo));
-            var attrString_mine = new StringReader(attrStringXML_mine);
-            var attrUDeserialize_mine = (UDAInfo)makeXML_mine.Deserialize(attrString_mine);
-
             var res_inh = attrUDeserialize_inh.Attribute.Select(x => x.Name);
-            var res_mine = attrUDeserialize_mine.Attribute.Select(x => x.Name);
-            return res_inh.Concat(res_mine).ToArray();
+            return res_inh.ToArray();
         }
         // Получаем знаения UDA 
         public static Dictionary<string,string> GetUDAValues(this IgObject gobj)
@@ -137,10 +139,22 @@ namespace GRAccessHelper.Extensions
                 throw new IgObjectsNullReferenceExceptions();
             Dictionary<string, string> udas = new Dictionary<string, string>();
             var attrs = gobj?.GetAttributesAny();
-            var uda_names = gobj?.GetUDANames();
+            var uda_names = gobj?.GetInheritsUDANames().Concat(gobj?.GetMineUDANames().ToArray());
             foreach (var name in uda_names)
                 udas.Add(name, attrs[name].value.GetString());
             return udas;
+        }
+        // Получаем имена скриптов
+        public static string[] GetMineScriptsName(this IgObject gobj)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            var attrStringXml_mine = gobj.GetAttributesAny(false)["Extensions"].value.ToString();
+            XmlSerializer xmlExtension_mine = new XmlSerializer(typeof(ExtensionInfo));
+            var attrString = new StringReader(attrStringXml_mine);
+            var attrDeserialize = (ExtensionInfo)xmlExtension_mine.Deserialize(attrString);
+            var res_mine = attrDeserialize.ObjectExtension.Extension.Select(x => x.Name).ToArray();
+            return res_mine;
         }
         // Установить значение любого объекта GR
         public static void SetAttributeValueRegular(this IgObject obj
@@ -187,7 +201,6 @@ namespace GRAccessHelper.Extensions
                 //если существует
                 else
                 {
-
                     var old_type = obj.GetAttributeMxDataType(name);
                     //проверяем изменился ли тип данных атрибута UDA
                     if (type != old_type)

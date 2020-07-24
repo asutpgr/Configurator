@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArchestrA.GRAccess;
-namespace GRAccessHelper.Attribute
+namespace GRAccessHelper.Utils
 {
     public class AttributesDictionary : Dictionary<string, MxValueClass>
     {

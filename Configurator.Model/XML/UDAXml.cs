@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
-
-namespace GRAccessHelper.Attribute
+namespace Configurator.Model.XML
 {
     [XmlRoot(ElementName = "Attribute")]
     public class Attribute

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанные со сборкой.
-[assembly: AssemblyTitle("Galaxy.Model")]
+[assembly: AssemblyTitle("Configurator.GalaxyRepository")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP Inc.")]
-[assembly: AssemblyProduct("Galaxy.Model")]
-[assembly: AssemblyCopyright("Copyright © HP Inc. 2020")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Configurator.GalaxyRepository")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("018538ef-29a3-4496-82a5-6321ba8d44e8")]
+[assembly: Guid("b3942d5a-50f0-4b5d-b163-971bc43c7749")]
 
 // Сведения о версии сборки состоят из указанных ниже четырех значений:
 //
