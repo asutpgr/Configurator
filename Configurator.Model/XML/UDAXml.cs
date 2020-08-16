@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 namespace Configurator.Model.XML
 {
     [XmlRoot(ElementName = "Attribute")]
-    public class Attribute
+    public class AttributeUDA
     {
         [XmlAttribute(AttributeName = "Name")]
         public string Name { get; set; }
@@ -27,6 +27,6 @@ namespace Configurator.Model.XML
     public class UDAInfo
     {
         [XmlElement(ElementName = "Attribute")]
-        public List<Attribute> Attribute { get; set; }
+        public List<AttributeUDA> Attribute { get; set; }
     }
 }

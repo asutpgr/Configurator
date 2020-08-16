@@ -149,7 +149,18 @@ namespace GRAccessHelper.Extensions
         {
             if (gobj == null)
                 throw new IgObjectsNullReferenceExceptions();
-            var attrStringXml_mine = gobj.GetAttributesAny(false)["Extensions"].value.ToString();
+            var attrStringXml_mine = gobj.GetAttributesAny(false)["Extensions"].value.GetString();
+            XmlSerializer xmlExtension_mine = new XmlSerializer(typeof(ExtensionInfo));
+            var attrString = new StringReader(attrStringXml_mine);
+            var attrDeserialize = (ExtensionInfo)xmlExtension_mine.Deserialize(attrString);
+            var res_mine = attrDeserialize.ObjectExtension.Extension.Select(x => x.Name).ToArray();
+            return res_mine;
+        }
+        public static string[] GetInhScriptsName(this IgObject gobj)
+        {
+            if (gobj == null)
+                throw new IgObjectsNullReferenceExceptions();
+            var attrStringXml_mine = gobj.GetAttributesAny(false)["_InheritedExtensions"].value.GetString();
             XmlSerializer xmlExtension_mine = new XmlSerializer(typeof(ExtensionInfo));
             var attrString = new StringReader(attrStringXml_mine);
             var attrDeserialize = (ExtensionInfo)xmlExtension_mine.Deserialize(attrString);

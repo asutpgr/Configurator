@@ -1,29 +1,78 @@
 ﻿using ArchestrA.GRAccess;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Configurator.Model
 {
-    public sealed class Template : GObjectModel
+    [Table("Templates")]
+    public class Template
     {
+        [Key]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Имя тега не может быть пустым")]
+        [Column("Имя шаблона")]
+        public string TagName { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать время создания шаблона")]
+        [Column("Дата создания")]
+        public DateTime DateCreation { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать, от какого шаблона создаг тег")]
+        [Column("Название производящего шаблона")]
+        public string DerivedFrom { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать, базовый шаблон")]
+        [Column("Базовый шаблон")]
+        public string BasedOn { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать, это экземрпляр или шаблон")]
+        public bool IsTemplate { get; set; }
+
+        [Column("Краткое описание")]
+        public string ShortDesc { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать катеорию тега")]
+        [Column("Категория")]
+        public ECATEGORY CategoryTag { get; set; }
+
+        [Column("Иерархическое имя")]
+        public string HierarchicalName { get; set; }
+
+
+        [Column("Список атрибутов")]
+        public ICollection<GAttribute> AttributesList { get; set; }
+
+        [Column("Список скриптов")]
+        public ICollection<Script> Script { get; set; }
+
         public Template(string tagname, 
-                        string derFrom, string basedOn, ECATEGORY category = ECATEGORY.idxCategoryUndefined, 
-                        ICollection<GAttribute> attrs = null, string shortDesc = null, bool isnew = true )
+                        string derFrom, 
+                        string basedOn,
+                        ECATEGORY category = ECATEGORY.idxCategoryUndefined,
+                        ICollection<GAttribute> attrs = null,
+                        ICollection<Script> script = null,
+                        string shortDesc = null)
         {
-            DateCreation = DateTime.Now;
+            if (string.IsNullOrWhiteSpace(tagname))
+                throw new ArgumentNullException($"Имя тега не может быть пустым");
+            if (string.IsNullOrWhiteSpace(derFrom))
+                throw new ArgumentNullException($"Имя шаблона не может быть пустым");
+            if (string.IsNullOrWhiteSpace(basedOn))
+                throw new ArgumentNullException($"Имя базового шаблона не может быть пустым");
+            if (string.IsNullOrWhiteSpace(shortDesc))
+                throw new ArgumentNullException($"Имя краткого описания не может быть пустым");
+
             TagName = tagname;
             DerivedFrom = derFrom;
             BasedOn = basedOn;
-            IsTemplate = true;
             ShortDesc = shortDesc;
+            DateCreation = DateTime.Now;
+            IsTemplate = true;
             AttributesList = attrs;
-            IsNew = isnew;
             CategoryTag = category;
-            HostName = null;
-            AreaName = null;
-            ContainerName = null;
-            ContainedName = null;
+            Script = script;
+
         }
-      
     }
 }

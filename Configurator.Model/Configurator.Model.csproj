@@ -42,22 +42,21 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="Model\GAttribute.cs" />
-    <Compile Include="Model\GObject.cs" />
     <Compile Include="Model\Instance.cs" />
+    <Compile Include="Model\IODevice.cs" />
     <Compile Include="Model\Template.cs" />
     <Compile Include="XML\ExtensionXml.cs" />
     <Compile Include="XML\UDAXml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
