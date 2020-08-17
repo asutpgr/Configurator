@@ -12,7 +12,7 @@ namespace Configurator.Model
         [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Имя тега не может быть пустым")]
         [Column("Имя шаблона")]
-        public string TagName { get; set; }
+        public string TemplateName { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Необходимо указать время создания шаблона")]
         [Column("Дата создания")]
@@ -40,10 +40,7 @@ namespace Configurator.Model
         public string HierarchicalName { get; set; }
 
 
-        [Column("Список атрибутов")]
         public ICollection<GAttribute> AttributesList { get; set; }
-
-        [Column("Список скриптов")]
         public ICollection<Script> Script { get; set; }
 
         public Template(string tagname, 
@@ -63,7 +60,7 @@ namespace Configurator.Model
             if (string.IsNullOrWhiteSpace(shortDesc))
                 throw new ArgumentNullException($"Имя краткого описания не может быть пустым");
 
-            TagName = tagname;
+            TemplateName = tagname;
             DerivedFrom = derFrom;
             BasedOn = basedOn;
             ShortDesc = shortDesc;
